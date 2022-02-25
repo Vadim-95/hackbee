@@ -2,7 +2,7 @@ import os
 from killerbee import *
 
 def get_device_information():
-    device_information = killerbee.show_dev()
+    device_information = show_dev()
     print(device_information)
     return device_information
 
@@ -28,6 +28,8 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     if verbose:
         networkdata,txcount, rxcount = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
     else:
+        print("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+        print(os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time)))
         networkdata,txcount, rxcount = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
     print(networkdata)
     print(txcount)

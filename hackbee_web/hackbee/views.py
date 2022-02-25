@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import killerbee_interface as kb
+from .killerbee_interface import *
 
 def index(request):
-    kb.get_device_information()
-    kb.get_open_channels()
+    get_device_information()
+    #get_open_channels()
+    get_open_channels("1:3","15")
     return HttpResponse(
         "Hello"
     )
