@@ -1,4 +1,5 @@
 import os
+import json
 from killerbee import *
 
 def get_device_information():
@@ -19,6 +20,7 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
         'channel': <11-25>
     }]
     TODO:
+    Add file_path for JSON and make it a parameter (not optional).
     Add support for verbose by displaying tool output on web interface in realtime.
     '''
     if not dev_id:
@@ -26,12 +28,11 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     elif not channel:
         return "Please provide channel."
     if verbose:
-        zbstumbler_data = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+         os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
     else:
-        zbstumbler_data = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
-    networkdata = zbstumbler_data[0]
-    txcount = zbstumbler_data[1]
-    rxcount = zbstumbler_data[2]
-    print(networkdata)
-    print(txcount)
-    print(rxcount)
+        os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+
+    with open('/tmp/network_data.json', 'w') as f:
+        network_data = json.load(f)
+        
+    print(network_data)
