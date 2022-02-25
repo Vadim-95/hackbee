@@ -32,7 +32,7 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     else:
         os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
 
-    with open('/tmp/network_data.json', 'w') as f:
+    with open('/tmp/network_data.json') as f:
         network_data = json.load(f)
         
     print(network_data)
