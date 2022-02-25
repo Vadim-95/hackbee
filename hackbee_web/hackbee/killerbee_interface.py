@@ -6,7 +6,7 @@ def get_device_information():
     print(device_information)
     return device_information
 
-def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, scan_time=10):
+def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, scan_time=3):
     '''
     Runs killerbees tool zbstumbler. 
     Structure of network_data =
@@ -26,11 +26,12 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     elif not channel:
         return "Please provide channel."
     if verbose:
-        networkdata,txcount, rxcount = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+        zbstumbler_data = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
     else:
-        print("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
-        print(os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time)))
-        networkdata,txcount, rxcount = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+        zbstumbler_data = os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+    networkdata = zbstumbler_data[0]
+    txcount = zbstumbler_data[1]
+    rxcount = zbstumbler_data[2]
     print(networkdata)
     print(txcount)
     print(rxcount)
