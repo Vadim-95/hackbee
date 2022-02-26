@@ -1,28 +1,59 @@
 {% block title %}<title>Home</title> {% endblock %}
+{% block css %} 
+{% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'hackbee/css/bootstrap.css' %}" >  
+    <script src="{% static 'hackbee/js/bootstrap.js' %}"></script>  
+{% endblock %}
+{% block navigation %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container justify-content-center">
+                <a class="navbar-brand" href="#">HackBee</a>
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Help</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+            </div>
+    </nav>
+{% endblock %}
 {% block content %}
-    <h1>Welcome to Hackbee</h1>
-    <p>
-        This is a simple web application to demonstrate the use of the Killerbee framework.
-    </p>
-    <p> The Killerbee framework is a security research framework for the ZigBee protocol. </p>
-    <table>
-        <thead>
-            <tr>
-                <th>Device ID</th>
-                <th>Product Name</th>
-                <th>Serial Number</th>
-            </tr>
-        </thead> 
-        <tbody>
-            {% for device in device_list %}
-            <tr>
-                <td> {{ device[0] }} </td>
-                <td> {{ device[1] }} </td>
-                <td> {{ device[2] }} </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container pt-4">
+        <h1>Welcome to Hackbee</h1>
+        <p>
+            This is a simple web application to demonstrate the use of the Killerbee framework.
+        </p>
+        <p> The Killerbee framework is a security research framework for the ZigBee protocol. </p>
+    </div>
+    <div class="container pt-4">
+        <h1>Available Devices</h1> 
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Device ID</th>
+                    <th>Product Name</th>
+                    <th>Serial Number</th>
+                </tr>
+            </thead> 
+            <tbody>
+                {% for device in device_list %}
+                <tr>
+                    <td> {{ device.0 }} </td>
+                    <td> {{ device.1 }} </td>
+                    <td> {{ device.2 }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
     
             

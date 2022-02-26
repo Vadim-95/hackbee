@@ -1,0 +1,18 @@
+body{
+    background-color: #FFFFFF;
+}
+.navigation {
+    background-color: #0a0a23;
+    border-radius: 25px;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+  }
+.navigationbar a {
+    float: left;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}

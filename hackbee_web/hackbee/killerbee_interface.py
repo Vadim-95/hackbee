@@ -4,7 +4,6 @@ from killerbee import *
 
 def get_device_information():
     device_information = show_dev()
-    print(device_information)
     return device_information
 
 def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, scan_time=3):
@@ -34,5 +33,3 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
 
     with open('/tmp/network_data.json') as f:
         network_data = json.load(f)
-        
-    print(network_data)
