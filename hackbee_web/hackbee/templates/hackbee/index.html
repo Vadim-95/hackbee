@@ -1,0 +1,28 @@
+{% block title %}<title>Home</title> {% endblock %}
+{% block content %}
+    <h1>Welcome to Hackbee</h1>
+    <p>
+        This is a simple web application to demonstrate the use of the Killerbee framework.
+    </p>
+    <p> The Killerbee framework is a security research framework for the ZigBee protocol. </p>
+    <table>
+        <thead>
+            <tr>
+                <th>Device ID</th>
+                <th>Product Name</th>
+                <th>Serial Number</th>
+            </tr>
+        </thead> 
+        <tbody>
+            {% for device in device_list %}
+            <tr>
+                <td> {{ device[0] }} </td>
+                <td> {{ device[1] }} </td>
+                <td> {{ device[2] }} </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+    
+            
