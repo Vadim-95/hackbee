@@ -1,9 +1,9 @@
 import os
 import json
-from killerbee import *
+import killerbee
 
 def get_device_information():
-    device_information = show_dev()
+    device_information = killerbee.show_dev()
     return device_information
 
 def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, scan_time=3):
@@ -33,3 +33,8 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
 
     with open('/tmp/network_data.json') as f:
         network_data = json.load(f)
+
+def key_search_pcap_mem():
+    memdump = "/ressources/memdump.bin"
+    pcap = "/ressources/zigbee-encrypted.pcap"
+    os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))

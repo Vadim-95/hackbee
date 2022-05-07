@@ -12,3 +12,6 @@ def index(request):
         'device_list': device_list,
     }    
     return render(request, template, context = context)
+
+def goodfind(request):
+    key_search_pcap_mem()
