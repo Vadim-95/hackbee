@@ -15,3 +15,7 @@ def index(request):
 
 def goodfind(request):
     key_search_pcap_mem()
+    context = {
+        'device_list': "test",
+    }
+    return render(request, "hackbee/index.html", context = context)

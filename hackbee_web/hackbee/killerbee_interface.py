@@ -34,7 +34,5 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     with open('/tmp/network_data.json') as f:
         network_data = json.load(f)
 
-def key_search_pcap_mem():
-    memdump = "/ressources/memdump.bin"
-    pcap = "/ressources/zigbee-encrypted.pcap"
+def key_search_pcap_mem(memdump = "/home/pi/Desktop/Studienarbeit_Dev/hackbee/hackbee_web/hackbee/ressources/memdump.bin", pcap = "/home/pi/Desktop/Studienarbeit_Dev/hackbee/hackbee_web/hackbee/ressources/zigbee-encrypted.pcap"):
     os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))
