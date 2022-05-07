@@ -55,6 +55,42 @@
         </table>
     </div>
     <div class="container pt-4">
+        <h1>Open channels.</h1> 
+        <form method="GET">
+            {% csrf_token %}
+            <p> Device ID</p>
+            <input type="text" name="device_id">
+	        <p> Channel</p>
+            <input type="number" name="channel">
+            <input type="number" name="delay">
+            <input type="number" name="scan_time">
+            <input type="submit" name="start_channel_discovery" value="Start channel discovery.">
+        </form>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>PAN ID</th>
+                    <th>Source</th>
+                    <th>External PAN ID</th>
+                    <th>Stack profile</th>
+                    <th>Stack version</th>
+                    <th>Channel</th>
+                </tr>
+            </thead> 
+            <tbody>
+                { % for stumbler_result in stumbler_results %}
+                <tr>
+                    <td> {{ stumbler_result["panid"] }} </td>
+                    <td> {{ stumbler_result["source"] }} </td>
+                    <td> {{ stumbler_result["extpanid"] }} </td>
+                    <td> {{ stumbler_result["stackprofile"] }} </td>
+                    <td> {{ stumbler_result["stackversion"] }} </td>
+                    <td> {{ stumbler_result["channel"] }} </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="container pt-4">
         <h1>Key search with encrypted PCAP and memory dump.</h1> 
         <p>As this tool is for educational purposes, we Hackbee provides a memory dump and encrypted PCAP with ZigBee traffic.</p>
         <p>If you have a memory dump and encrypted PCAP, provide the path using the options:</p>
@@ -62,7 +98,7 @@
             <li>-r : path to encrypted packet capture file.</li>
             <li>-f : path to memory dump.</li>
         </ol>
-        <form method="POST">
+        <form method="GET">
             {% csrf_token %}
             <p> Path to encrypted PCAP. Default path is in ressources folder of hackbee.</p>
             <input type="text" name="input_pcap">
