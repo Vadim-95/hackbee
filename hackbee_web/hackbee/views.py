@@ -12,14 +12,19 @@ def index(request):
     if request.GET.get("start_channel_discovery"):
         dev_id = request.GET.get("dev_id")
         channel = request.GET.get("channel")
+        if channel == "":
+            channel = None
         delay = request.GET.get("delay")
         if delay == "":
             delay = 2
         scan_time = request.GET.get("scan_time")
         if scan_time == "" or int(scan_time) > 3:
             scan_time = 3
-        stumbler_results = get_open_channels(dev_id=dev_id, channel = channel, verbose=False, delay=delay, scan_time=scan_time)
-        context['stumbler_results'] = stumbler_results
+        get_open_channels(dev_id=dev_id, channel = channel, verbose=False, delay=delay, scan_time=scan_time)
+        with open('/tmp/network_data.json') as f:
+            network_data = json.load(f)
+        print(type(network_data))
+        context['stumbler_results'] = network_data
 
     if request.GET.get("start_zbgoodfind"):
         goodfind_results = goodfind(request)

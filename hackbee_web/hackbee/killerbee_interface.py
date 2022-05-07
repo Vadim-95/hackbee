@@ -24,16 +24,10 @@ def get_open_channels(dev_id, channel, verbose=False, delay=2, scan_time=3):
     '''
     if not dev_id:
         return "Please provide Device ID/Interface."
-    elif not channel:
-        return "Please provide channel."
-    if verbose:
-         os.system("sudo zbstumbler -i {0} -c {1} -s {2} -v -d {3}".format(dev_id, channel, delay, scan_time))
+    if channel is None:
+        os.system("sudo zbstumbler -i {0} -s {1} -d {2}".format(dev_id, delay, scan_time))
     else:
         os.system("sudo zbstumbler -i {0} -c {1} -s {2} -d {3}".format(dev_id, channel, delay, scan_time))
-
-    with open('/tmp/network_data.json') as f:
-        network_data = json.load(f)
-    return network_data
 
 def key_search_pcap_mem(memdump, pcap):
     try:

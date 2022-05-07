@@ -58,11 +58,13 @@
         <h1>Open channels.</h1> 
         <form method="GET">
             {% csrf_token %}
-            <p> Device ID</p>
-            <input type="text" name="device_id">
-	        <p> Channel</p>
+            <p>Device ID</p>
+            <input type="text" name="dev_id">
+	    <p>Channel</p>
             <input type="number" name="channel">
+	    <p>Delay. Default = 2</p>
             <input type="number" name="delay">
+	    <p>Scan Duration. Default value and max value is 3</p>
             <input type="number" name="scan_time">
             <input type="submit" name="start_channel_discovery" value="Start channel discovery.">
         </form>
@@ -78,15 +80,16 @@
                 </tr>
             </thead> 
             <tbody>
-                { % for stumbler_result in stumbler_results %}
-                <tr>
-                    <td> {{ stumbler_result["panid"] }} </td>
-                    <td> {{ stumbler_result["source"] }} </td>
-                    <td> {{ stumbler_result["extpanid"] }} </td>
-                    <td> {{ stumbler_result["stackprofile"] }} </td>
-                    <td> {{ stumbler_result["stackversion"] }} </td>
-                    <td> {{ stumbler_result["channel"] }} </td>
-                </tr>
+	        {% for stumbler_result in stumbler_results %}
+			<tr>
+			    <td> {{ stumbler_result.panid }} </td>
+			    <td> {{ stumbler_result.source }} </td>
+			    <td> {{ stumbler_result.extpanid }} </td>
+			    <td> {{ stumbler_result.stackprofile }} </td>
+			    <td> {{ stumbler_result.stackversion }} </td>
+			    <td> {{ stumbler_result.channel }} </td>
+			</tr>
+		{% endfor  %}
             </tbody>
         </table>
     </div>
