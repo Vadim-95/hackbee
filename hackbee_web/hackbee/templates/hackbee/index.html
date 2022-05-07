@@ -55,7 +55,7 @@
         </table>
     </div>
     <div class="container pt-4">
-        <h1>Open channels.</h1> 
+        <h1>Channel Discovery</h1> 
         <form method="GET">
             {% csrf_token %}
             <p>Device ID</p>
@@ -92,6 +92,22 @@
 		{% endfor  %}
             </tbody>
         </table>
+    </div>
+    <div class="container pt-4">
+        <h1>Convert PCAP to SNA and vice versa.</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <p> Input file path.</p>
+            <input type="text" name="input_convert_file_path">
+            <p> Output file path.</p>
+            <input type="text" name="output_convert_file_path">
+            <input type="submit" name="start_zbconverter" value="Convert file.">
+        </form>
+        {{ zbconverter_status }}
+        {% if zbconverter_output_file is None %}
+            <p>No output file.</p>
+        {% else %}
+            <p>Output file: {{ zbconverter_output_file }}</p>
     </div>
     <div class="container pt-4">
         <h1>Key search with encrypted PCAP and memory dump.</h1> 

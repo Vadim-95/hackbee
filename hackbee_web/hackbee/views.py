@@ -32,6 +32,16 @@ def index(request):
         context['zbgoodfind_guesses'] = goodfind_results['zbgoodfind_guesses']
         context['zbgoodfind_status'] = goodfind_results['zbgoodfind_status']
 
+    if request.POST.get("start_zbconverter"):
+        output_file, status = convert_dsna_to_pcap(request)
+        if output_file == None:
+            context['zbconverter_status'] = status
+            context['zbconverter_output_file'] = "Error"
+        else:
+            context['zbconverter_status'] = status
+            context['zbconverter_output_file'] = output_file
+        
+
     return render(request, template, context = context)
 
 def goodfind(request):
@@ -58,3 +68,20 @@ def goodfind(request):
         'zbgoodfind_status' : status_code
     }
     return goodfind_results
+
+def convert_dsna_to_pcap(request):
+    input_file_path = request.GET.get("input_convert_file_path")
+    output_file_path = request.GET.get("output_convert_file_path")
+
+    if input_file_path == "":
+        status = "Please provide input file path."
+    elif output_file_path == "":
+        status = "Please provide output file path."
+    else:
+        status = convert_dsna_to_pcap_file(input_file_path, output_file_path)
+
+    if status != "Success":
+        output_file_path = None
+    
+    return output_file_path, status
+    

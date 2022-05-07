@@ -44,3 +44,13 @@ def key_search_pcap_mem(memdump, pcap):
         status_code = "Please provide correct file paths."
 
     return key, guesses, status_code
+
+def convert_dsna_to_pcap_file(input_file_path, output_file_path):
+    try:
+        os.system("sudo zbconverter -i {0} -o {1} ".format(input_file_path, output_file_path))
+        status_code = "Success"
+    except Exception as e:
+        print(e)
+        status_code = "Conversion failed."
+    
+    return status_code
