@@ -64,8 +64,10 @@
         </ol>
         <form method="POST">
             {% csrf_token %}
-            <input type="text" name="input_pcap" value="Path to encrypted PCAP. Default path is in ressources folder of hackbee.">
-            <input type="text" name="input_memdump" value="Path to memory dump. Default path is in ressources folder of hackbee.">
+            <p> Path to encrypted PCAP. Default path is in ressources folder of hackbee.</p>
+            <input type="text" name="input_pcap">
+	    <p> Path to memory dump. Default path is in ressources folder of hackbee. </p>
+            <input type="text" name="input_memdump">
             <input type="submit" name="start_zbgoodfind" value="Start key search.">
         </form>
         <table class="table table-sm">
@@ -78,11 +80,10 @@
             </thead> 
             <tbody>
                 <tr>
-                    <td> {{ goodfind_results['key'] }} </td>
-                    <td> {{ goodfind_results['guesses'] }} </td>
-                    <td> {{ goodfind_results['status'] }} </td>
+                    <td> {{ zbgoodfind_key }} </td>
+                    <td> {{ zbgoodfind_guesses }} </td>
+                    <td> {{ zbgoodfind_status }} </td>
                 </tr>
-                {% endfor %}
             </tbody>
         </table>
     </div>

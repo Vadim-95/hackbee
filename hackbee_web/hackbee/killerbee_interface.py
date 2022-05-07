@@ -36,9 +36,14 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
 
 def key_search_pcap_mem(memdump, pcap):
     try:
-        key, guesses = os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))
+        os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))
+        with open('/tmp/zbgoodfind_result.json') as f:
+            zbgoodfind_result = json.load(f)
+        key = zbgoodfind_result["key"]
+        guesses = zbgoodfind_result["guesses"]
         status_code = "Success"
-    except:
+    except Exception as e:
+        print(e)
         key = None
         guesses = None
         status_code = "Please provide correct file paths."
