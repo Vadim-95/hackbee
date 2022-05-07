@@ -54,6 +54,39 @@
             </tbody>
         </table>
     </div>
+    <div class="container pt-4">
+        <h1>Key search with encrypted PCAP and memory dump.</h1> 
+        <p>As this tool is for educational purposes, we Hackbee provides a memory dump and encrypted PCAP with ZigBee traffic.</p>
+        <p>If you have a memory dump and encrypted PCAP, provide the path using the options:</p>
+        <ol>
+            <li>-r : path to encrypted packet capture file.</li>
+            <li>-f : path to memory dump.</li>
+        </ol>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="input_pcap" value="Path to encrypted PCAP. Default path is in ressources folder of hackbee.">
+            <input type="text" name="input_memdump" value="Path to memory dump. Default path is in ressources folder of hackbee.">
+            <input type="submit" name="start_zbgoodfind" value="Start key search.">
+        </form>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Guesses</th>
+                    <th>Key</th>
+                </tr>
+            </thead> 
+            <tbody>
+                <tr>
+                    <td> {{ goodfind_results['key'] }} </td>
+                    <td> {{ goodfind_results['guesses'] }} </td>
+                    <td> {{ goodfind_results['status'] }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
+
     
             
