@@ -32,7 +32,7 @@ def index(request):
         context['zbgoodfind_guesses'] = goodfind_results['zbgoodfind_guesses']
         context['zbgoodfind_status'] = goodfind_results['zbgoodfind_status']
 
-    if request.POST.get("start_zbconverter"):
+    if request.GET.get("start_zbconverter"):
         output_file, status = convert_dsna_to_pcap(request)
         if output_file == None:
             context['zbconverter_status'] = status
@@ -72,7 +72,8 @@ def goodfind(request):
 def convert_dsna_to_pcap(request):
     input_file_path = request.GET.get("input_convert_file_path")
     output_file_path = request.GET.get("output_convert_file_path")
-
+    print(input_file_path)
+    print(output_file_path)
     if input_file_path == "":
         status = "Please provide input file path."
     elif output_file_path == "":
