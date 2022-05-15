@@ -1,12 +1,12 @@
 import os
 import json
-from killerbee import *
+import killerbee
 
 def get_device_information():
-    device_information = show_dev()
+    device_information = killerbee.show_dev()
     return device_information
 
-def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, scan_time=3):
+def get_open_channels(dev_id, channel, verbose=False, delay=2, scan_time=3):
     '''
     Runs killerbees tool zbstumbler. 
     Structure of network_data =
@@ -24,12 +24,33 @@ def get_open_channels(dev_id, channel, verbose=False, file_path=None, delay=2, s
     '''
     if not dev_id:
         return "Please provide Device ID/Interface."
-    elif not channel:
-        return "Please provide channel."
-    if verbose:
-         os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -v -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+    if channel is None:
+        os.system("sudo zbstumbler -i {0} -s {1} -d {2}".format(dev_id, delay, scan_time))
     else:
-        os.system("sudo zbstumbler -i {0} -c {1} -s {2} -w {3} -d {4}".format(dev_id, channel, delay, file_path, scan_time))
+        os.system("sudo zbstumbler -i {0} -c {1} -s {2} -d {3}".format(dev_id, channel, delay, scan_time))
 
-    with open('/tmp/network_data.json') as f:
-        network_data = json.load(f)
+def key_search_pcap_mem(memdump, pcap):
+    try:
+        os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))
+        with open('/tmp/zbgoodfind_result.json') as f:
+            zbgoodfind_result = json.load(f)
+        key = zbgoodfind_result["key"]
+        guesses = zbgoodfind_result["guesses"]
+        status_code = "Success"
+    except Exception as e:
+        print(e)
+        key = None
+        guesses = None
+        status_code = "Please provide correct file paths."
+
+    return key, guesses, status_code
+
+def convert_dsna_to_pcap_file(input_file_path, output_file_path):
+    try:
+        os.system("sudo zbconvert -i {0} -o {1} ".format(input_file_path, output_file_path))
+        status_code = "Success"
+    except Exception as e:
+        print(e)
+        status_code = "Conversion failed."
+    
+    return status_code
