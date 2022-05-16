@@ -59,7 +59,7 @@ def index(request):
                 kb.break_signal = False
                 context["sniffer_status"] = "Sniffing start."
                 start_sniffing(pcap_file_path, channel,packetcount, kb)
-    elif request.GET.get("stop_sniffing"):
+    if request.GET.get("stop_sniffing"):
         kb.break_signal = True
         context["sniffer_status"] = "Sniffing stopped."
         
