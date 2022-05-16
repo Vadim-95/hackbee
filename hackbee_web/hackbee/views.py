@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .killerbee_interface import *
+from killerbee import *
 
 def index(request):
     template = 'hackbee/index.html'
