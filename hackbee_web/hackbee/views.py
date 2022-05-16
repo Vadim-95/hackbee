@@ -85,4 +85,11 @@ def convert_dsna_to_pcap(request):
         output_file_path = None
     
     return output_file_path, status
+
+def cvsscalc(request):
+    template = "hackbee/cvss.html"
+    return render(request,template)
+
+def report(request):
+    return HttpResponse(" Hello")
     
