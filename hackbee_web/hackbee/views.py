@@ -3,8 +3,10 @@ from django.http import HttpResponse
 from .killerbee_interface import *
 from killerbee import *
 
+kb = None
+
 def index(request):
-    
+    global kb
     template = 'hackbee/index.html'
     device_list = get_device_information()
 
@@ -48,20 +50,14 @@ def index(request):
         dev_id = request.GET.get("dev_id")
         channel = int(request.GET.get("channel"))
         packetcount = request.GET.get("packetcount")
+        if packetcount == "":
+            packetcount = None
         if pcap_file_path == "":
             pcap_file_path['pcap_reader'] = "Please provide pcap file path."
         else:
-            kb = killerbee_sniffer(dev_id,channel)
-            
-            if kb == "Could not set channel.":
-                context["sniffer_status"] = kb
-            else:
-                kb.break_signal = False
-                context["sniffer_status"] = "Sniffing start."
-                start_sniffing(pcap_file_path, channel,packetcount, kb)
+            killerbee_sniffer(dev_id,channel,pcap_file_path,packetcount)
     if request.GET.get("stop_sniffing"):
         kb.break_signal = True
-        context["sniffer_status"] = "Sniffing stopped."
         
 
     return render(request, template, context = context)
@@ -108,28 +104,28 @@ def convert_dsna_to_pcap(request):
     
     return output_file_path, status
 
-def killerbee_sniffer(dev_id, channel):
+def killerbee_sniffer(dev_id, channel, pcap_file_path, count):
+    global kb
     with KillerBee(device=dev_id) as kb:
         try:
             kb.set_channel(channel, 0)
-            return kb
+            kb.break_signal = False
         except ValueError as e:
             return "Could not set channel."
-
-def start_sniffing(pcap_file_path, channel,count, kb):
-    with PcapDumper(DLT_IEEE802_15_4, pcap_file_path, False) as pd:
-        rf_freq_mhz = kb.frequency(channel, 0) / 1000.0
-        packetcount = 0
-        while count != packetcount:
-            # Wait for the next packet
-            packet = kb.pnext()
-
-            if packet != None:
-                packetcount+=1
-                pd.pcap_dump(packet['bytes'], ant_dbm=packet['dbm'], freq_mhz=rf_freq_mhz)
-            
-            if kb.break_signal:
-                break
+        with PcapDumper(DLT_IEEE802_15_4, pcap_file_path, False) as pd:
+            rf_freq_mhz = kb.frequency(channel, 0) / 1000.0
+            packetcount = 0
+            if count is not None:
+                count = int(count)
+            while count != packetcount:
+                # Wait for the next packet
+                packet = kb.pnext()
+                if packet != None:
+                    packetcount+=1
+                    pd.pcap_dump(packet['bytes'], ant_dbm=packet['dbm'], freq_mhz=rf_freq_mhz)
+                
+                if kb.break_signal:
+                    break
                     
-        kb.sniffer_off()
-        print(("{0} packets captured".format(packetcount)))
+            kb.sniffer_off()
+            print(("{0} packets captured".format(packetcount)))
