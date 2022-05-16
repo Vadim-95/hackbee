@@ -54,3 +54,13 @@ def convert_dsna_to_pcap_file(input_file_path, output_file_path):
         status_code = "Conversion failed."
     
     return status_code
+
+def read_pcap_file(pcap_file_path):
+    try:
+        os.system("sudo zbcat -r {0} ".format(pcap_file_path))
+        status_code = "Success"
+    except Exception as e:
+        print(e)
+        status_code = "Reading failed."
+    
+    return status_code
