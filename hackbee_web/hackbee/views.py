@@ -45,8 +45,8 @@ def index(request):
     if request.GET.get("start_sniffing"):
         pcap_file_path = request.GET.get("pcap_file_path")
         dev_id = request.GET.get("dev_id")
-        channel = request.GET.get("channel")
-        packetcount = request.GET.get("packetcount")
+        channel = int(request.GET.get("channel"))
+        packetcount = int(request.GET.get("packetcount"))
         if pcap_file_path == "":
             pcap_file_path['pcap_reader'] = "Please provide pcap file path."
         else:
