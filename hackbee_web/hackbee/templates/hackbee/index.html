@@ -151,7 +151,8 @@
         <ol>
             <li>--file-path : path to save the packet capture (PCAP) file.</li>
             <li>--dev_id : provide the device id of the sniffing module e.g., 1:3 </li>
-            <li>--dev_id : provide the channel to sniff on e.g., 15 </li>
+            <li>--channel : provide the channel to sniff on e.g., 15 </li>
+            <li>--packet_count : provide the number of packets you want to sniff on e.g., 500 </li>
         </ol>
         <form method="GET">
             {% csrf_token %}
@@ -161,6 +162,8 @@
             <input type="text" name="dev_id">
             <p>Channel </p>
             <input type="text" name="channel">
+            <p>Amount of packets to capture </p>
+            <input type="text" name="packetcount">
             <input type="submit" name="start_sniffing" value="Start sniffing.">
             <input type="submit" name="stop_sniffing" value="Stop sniffing.">
         </form>

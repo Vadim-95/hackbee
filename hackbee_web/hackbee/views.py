@@ -4,6 +4,7 @@ from .killerbee_interface import *
 from killerbee import *
 
 def index(request):
+    
     template = 'hackbee/index.html'
     device_list = get_device_information()
 
@@ -51,6 +52,7 @@ def index(request):
             pcap_file_path['pcap_reader'] = "Please provide pcap file path."
         else:
             kb = killerbee_sniffer(dev_id,channel)
+            
             if kb == "Could not set channel.":
                 context["sniffer_status"] = kb
             else:
