@@ -61,25 +61,18 @@ def replay_attack_pcap(pcap, device_id, channel, count):
             os.system("sudo zbreplay -i {0} -r {1} -c {2} -n {3}".format(device_id,pcap, channel, count))
         else:
             os.system("sudo zbreplay -i {0} -r {1} -c {2} ".format(device_id, pcap, channel))
-        status_code = "Success"
     except Exception as e:
         print(e)
         results = e
         status_code = "Attack failed."
-
-    with open('/tmp/zbreplay_result.json') as f:
-        zbreplay_result = json.load(f)
-
+    try: 
+        with open('/tmp/zbreplay_result.json') as f:
+            zbreplay_result = json.load(f)
+        status_code = "Success"
+    except:
+        zbreplay_result = None
+        status_code = "Failed"
+        
     results = zbreplay_result["packetcount"]
-
+    os.system("sudo rm /tmp/zbreplay_result.json")
     return status_code, results
-
-    # parser.add_argument('-i', '--iface', '--dev', action='store', dest='devstring')
-    # parser.add_argument('-r', '--pcapfile', action='store', default=None)
-    # parser.add_argument('-R', '--dsnafile', action='store', default=None)
-    # #parser.add_argument('-g', '--gps', '--ignore', action='append', dest='ignore')
-    # parser.add_argument('-c', '-f', '--channel', action='store', type=int, default=None)
-    # parser.add_argument('-z', '--subghz_page', action='store', type=int, default=0)
-    # parser.add_argument('-n', '--count', action='store', type=int, default=-1)
-    # parser.add_argument('-s', '--sleep', action='store', type=float, default=1.0)
-    # parser.add_argument('-D', action='store_true', dest='showdev')
