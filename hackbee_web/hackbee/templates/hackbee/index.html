@@ -168,6 +168,28 @@
             <input type="submit" name="stop_sniffing" value="Stop sniffing.">
         </form>
     </div>
+    <div class="container pt-4">
+        <h1>ZigBee PCAP Reader</h1> 
+        <p>This tool shall provide the capability to read and display PCAPs in browser.</p>
+        <ol>
+            <li>--file-path : path to save the packet capture (PCAP) file.</li>
+        </ol>
+        <form method="GET">
+            {% csrf_token %}
+            <p> Path to save the PCAP.</p>
+            <input type="text" name="pcap_file_path">
+            <input type="submit" name="read_pcap" value="Read PCAP.">
+        </form>
+        <textarea>
+            {% for packet in pcap_file_path %}
+                <tr> 
+                    <td>
+                        {{ packet }}
+                    </td> 
+                </tr>
+            {% endfor %}
+        </textarea>
+    </div>
 {% endblock %}
 
     
