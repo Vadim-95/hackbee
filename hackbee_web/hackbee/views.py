@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from scapy import *
 from .killerbee_interface import *
 from killerbee import *
 
@@ -66,17 +66,8 @@ def index(request):
         if pcap_file_path == "":
             pcap_file_path = "Provide PCAP path."
         else:
-            cap = PcapReader(pcap_file_path)
-            pcap_content = []
-            while True:
-                try:
-                    packet = cap.pnext()[1]
-                    if packet is None:
-                        break
-                    pcap_content.append(packet)
-                except TypeError:
-                    break
-            context['pcap_content'] = pcap_content
+            scapy_cap = rdpcap(pcap_file_path)
+            context['pcap_content'] = scapy_cap
 
     return render(request, template, context = context)
 
