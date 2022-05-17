@@ -111,6 +111,28 @@
             </tbody>
         </table>
     </div>
+    <div class="container pt-4">
+        <h1>ZigBee Replay Attack</h1>
+        <p>This tool is based on the KillerBee zbreplay tool.</p>
+        <form method="GET">
+            {% csrf_token %}
+            <p>PCAP Path</p>
+            <input type="text" name="input_pcap">
+            <p>Device ID / Interface</p>
+            <input type="text" name="device_id">
+            <p>Channel</p>
+            <input type="text" name="channel">
+            <p>Amount of packets to replay. Default = 1</p>
+            <input type="text" name="count">
+            <input type="submit" name="start_replay_attack" value="Start replay attack.">
+        </form>
+        {{ replay_attack_status }}
+        {% if replay_attack_results is None %}
+            <p>No result.</p>
+        {% else %}
+            <p> {{ replay_attack_results }} packets transmitted</p>
+        {% endif %}
+    </div>
 {%endblock tools%}
 
     
