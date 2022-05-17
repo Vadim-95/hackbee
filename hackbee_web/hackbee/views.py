@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from killerbee.killerbee.pcapdump import PcapReader
 from .killerbee_interface import *
 from killerbee import *
 
@@ -58,19 +57,22 @@ def index(request):
             pcap_file_path['pcap_reader'] = "Please provide pcap file path."
         else:
             killerbee_sniffer(dev_id,channel,pcap_file_path,packetcount)
+            
     if request.GET.get("stop_sniffing"):
         kb.break_signal = True
     
     if request.GET.get("read_pcap"):
         pcap_file_path = request.GET.get("pcap_file_path")
         if pcap_file_path == "":
-            pcap_file_path = None
+            pcap_file_path = "Provide PCAP path."
         else:
             cap = PcapReader(pcap_file_path)
             pcap_content = []
             while True:
                 try:
                     packet = cap.pnext()[1]
+                    if packet is None:
+                        break
                     pcap_content.append(packet)
                 except TypeError:
                     break
