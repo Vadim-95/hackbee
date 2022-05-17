@@ -180,15 +180,13 @@
             <input type="text" name="pcap_file_path">
             <input type="submit" name="read_pcap" value="Read PCAP.">
         </form>
-        <textarea>
-            {% for packet in pcap_file_path %}
+            {% for packet in pcap_content %}
                 <tr> 
                     <td>
                         {{ packet }}
                     </td> 
                 </tr>
             {% endfor %}
-        </textarea>
     </div>
 {% endblock %}
 
