@@ -103,6 +103,8 @@ def replay_attack(request):
         device_id = request.GET.get("device_id")
         channel = request.GET.get("channel")
         count = request.GET.get("count")
+        if count == "":
+            count = 1
         status, results = replay_attack_pcap(pcap, device_id, channel, count)
 
         return status, results
