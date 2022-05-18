@@ -67,67 +67,7 @@ def index(request):
         if pcap_file_path == "":
             pcap_file_path = "Provide PCAP path."
         else:
-            conf.dot15d4_protocol = "zigbee"
-            scapy_cap = rdpcap(pcap_file_path)
-            packet_capture = []
-            for packet in scapy_cap:
-                try:
-                    dot15d4_fcs =  {
-                        "fcf_reserved_1" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_1,
-                        "fcf_panidcompress" : packet[Dot15d4][Dot15d4FCS].fcf_panidcompress,
-                        "fcf_ackreq" : packet[Dot15d4][Dot15d4FCS].fcf_ackreq,
-                        "fcf_pending" : packet[Dot15d4][Dot15d4FCS].fcf_pending,
-                        "fcf_security" : packet[Dot15d4][Dot15d4FCS].fcf_security,
-                        "fcf_frametype" : packet[Dot15d4][Dot15d4FCS].fcf_frametype,
-                        "fcf_srcaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_srcaddrmode,
-                        "fcf_framever" : packet[Dot15d4][Dot15d4FCS].fcf_framever,
-                        "fcf_destaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_destaddrmode,
-                        "fcf_reserved_2" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_2,
-                        "seqnum" : packet[Dot15d4][Dot15d4FCS].seqnum,
-                        "fcs" : packet[Dot15d4][Dot15d4FCS].fcs
-                        }
-                except:
-                    pass
-                try:
-                    dot15d4_data = {
-                        "dest_panid" : packet[Dot15d4][Dot15d4Data].dest_panid,
-                        "dest_addr" : packet[Dot15d4][Dot15d4Data].dest_addr,
-                        "src_addr" : packet[Dot15d4][Dot15d4Data].src_addr
-                        }
-                except:
-                    pass
-                try:
-                    zigbee_nwk = {
-                        "discover_route" : packet[Dot15d4][ZigbeeNWK].discover_route,
-                        "proto_version" : packet[Dot15d4][ZigbeeNWK].proto_version,
-                        "frametype" : packet[Dot15d4][ZigbeeNWK].frametype,
-                        "flags" : packet[Dot15d4][ZigbeeNWK].flags,
-                        "destination" : packet[Dot15d4][ZigbeeNWK].destination,
-                        "source" : packet[Dot15d4][ZigbeeNWK].source,
-                        "radius" : packet[Dot15d4][ZigbeeNWK].radius,
-                        "seqnum" : packet[Dot15d4][ZigbeeNWK].seqnum
-                        }
-                except:
-                    pass
-                try:
-                    zigbee_security_header = {
-                        "reserved1" : packet[Dot15d4][ZigbeeSecurityHeader].reserved1,
-                        "extended_nonce" : packet[Dot15d4][ZigbeeSecurityHeader].extended_nonce,
-                        "key_type" : packet[Dot15d4][ZigbeeSecurityHeader].key_type,
-                        "nwk_seclevel" : packet[Dot15d4][ZigbeeSecurityHeader].nwk_seclevel,
-                        "fc" : packet[Dot15d4][ZigbeeSecurityHeader].fc,
-                        "source" : packet[Dot15d4][ZigbeeSecurityHeader].source,
-                        "key_seqnum" : packet[Dot15d4][ZigbeeSecurityHeader].key_seqnum,
-                        "data" : packet[Dot15d4][ZigbeeSecurityHeader].data
-                        }
-                except:
-                    pass
-                try:
-                    data_utf = str(encode(packet[Dot15d4][ZigbeeSecurityHeader].data, "hex"), "utf-8")
-                    data_mic = data_utf.split("b9")
-                except:
-                    pass
-                
+            scapy_cap = scap_pcap_reader(pcap_file_path)
             context['pcap_content'] = scapy_cap
 
     return render(request, template, context = context)
@@ -199,3 +139,73 @@ def killerbee_sniffer(dev_id, channel, pcap_file_path, count):
                     
             kb.sniffer_off()
             print(("{0} packets captured".format(packetcount)))
+
+def scap_pcap_reader(pcap_file_path):
+    conf.dot15d4_protocol = "zigbee"
+    scapy_cap = rdpcap(pcap_file_path)
+    packet_capture = [None] * len(scapy_cap)
+    for index, packet in enumerate(scapy_cap):
+        packet_capture[index] = {}
+        try:
+            dot15d4_fcs =  {
+                "fcf_reserved_1" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_1,
+                "fcf_panidcompress" : packet[Dot15d4][Dot15d4FCS].fcf_panidcompress,
+                "fcf_ackreq" : packet[Dot15d4][Dot15d4FCS].fcf_ackreq,
+                "fcf_pending" : packet[Dot15d4][Dot15d4FCS].fcf_pending,
+                "fcf_security" : packet[Dot15d4][Dot15d4FCS].fcf_security,
+                "fcf_frametype" : packet[Dot15d4][Dot15d4FCS].fcf_frametype,
+                "fcf_srcaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_srcaddrmode,
+                "fcf_framever" : packet[Dot15d4][Dot15d4FCS].fcf_framever,
+                "fcf_destaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_destaddrmode,
+                "fcf_reserved_2" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_2,
+                "seqnum" : packet[Dot15d4][Dot15d4FCS].seqnum,
+                "fcs" : packet[Dot15d4][Dot15d4FCS].fcs
+                }
+            packet_capture[index]['dot15d4_fcs'] = dot15d4_fcs
+        except:
+            pass
+
+        try:
+            dot15d4_data = {
+                "dest_panid" : packet[Dot15d4][Dot15d4Data].dest_panid,
+                "dest_addr" : packet[Dot15d4][Dot15d4Data].dest_addr,
+                "src_addr" : packet[Dot15d4][Dot15d4Data].src_addr
+                }
+            packet_capture[index]['dot15d4_data'] = dot15d4_data
+        except:
+            pass
+
+        try:
+            zigbee_nwk = {
+                "discover_route" : packet[Dot15d4][ZigbeeNWK].discover_route,
+                "proto_version" : packet[Dot15d4][ZigbeeNWK].proto_version,
+                "frametype" : packet[Dot15d4][ZigbeeNWK].frametype,
+                "flags" : packet[Dot15d4][ZigbeeNWK].flags,
+                "destination" : packet[Dot15d4][ZigbeeNWK].destination,
+                "source" : packet[Dot15d4][ZigbeeNWK].source,
+                "radius" : packet[Dot15d4][ZigbeeNWK].radius,
+                "seqnum" : packet[Dot15d4][ZigbeeNWK].seqnum
+                }
+            packet_capture[index]['zigbee_nwk'] = zigbee_nwk
+        except:
+            pass
+        try:
+            zigbee_security_header = {
+                "reserved1" : packet[Dot15d4][ZigbeeSecurityHeader].reserved1,
+                "extended_nonce" : packet[Dot15d4][ZigbeeSecurityHeader].extended_nonce,
+                "key_type" : packet[Dot15d4][ZigbeeSecurityHeader].key_type,
+                "nwk_seclevel" : packet[Dot15d4][ZigbeeSecurityHeader].nwk_seclevel,
+                "fc" : packet[Dot15d4][ZigbeeSecurityHeader].fc,
+                "source" : packet[Dot15d4][ZigbeeSecurityHeader].source,
+                "key_seqnum" : packet[Dot15d4][ZigbeeSecurityHeader].key_seqnum,
+                "data" : packet[Dot15d4][ZigbeeSecurityHeader].data
+                }
+            data_utf = str(encode(packet[Dot15d4][ZigbeeSecurityHeader].data, "hex"), "utf-8")
+            data_mic = data_utf.split("b9")
+            zigbee_security_header["data_utf8"] = data_mic[0]
+            zigbee_security_header["mic_utf8"] = data_mic[1]
+            packet_capture[index]['zigbee_security_header'] = zigbee_security_header
+        except:
+            pass
+    
+    return packet_capture
