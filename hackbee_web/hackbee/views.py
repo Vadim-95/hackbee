@@ -1,8 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from scapy.all import *
+from codecs import encode
 from .killerbee_interface import *
+from killerbee import *
+
+kb = None
 
 def index(request):
+    global kb
     template = 'hackbee/index.html'
     device_list = get_device_information()
 
@@ -40,6 +46,29 @@ def index(request):
         else:
             context['zbconverter_status'] = status
             context['zbconverter_output_file'] = output_file
+
+    if request.GET.get("start_sniffing"):
+        pcap_file_path = request.GET.get("pcap_file_path")
+        dev_id = request.GET.get("dev_id")
+        channel = int(request.GET.get("channel"))
+        packetcount = request.GET.get("packetcount")
+        if packetcount == "":
+            packetcount = None
+        if pcap_file_path == "":
+            pcap_file_path['pcap_reader'] = "Please provide pcap file path."
+        else:
+            killerbee_sniffer(dev_id,channel,pcap_file_path,packetcount)
+            
+    if request.GET.get("stop_sniffing"):
+        kb.break_signal = True
+    
+    if request.GET.get("read_pcap"):
+        pcap_file_path = request.GET.get("pcap_file_path")
+        if pcap_file_path == "":
+            pcap_file_path = "Provide PCAP path."
+        else:
+            scapy_cap = scap_pcap_reader(pcap_file_path)
+            context['pcap_content'] = scapy_cap
         
     if request.GET.get("start_replay_attack"):
         status, results = replay_attack(request)
@@ -89,6 +118,102 @@ def convert_dsna_to_pcap(request):
         output_file_path = None
     
     return output_file_path, status
+
+def killerbee_sniffer(dev_id, channel, pcap_file_path, count):
+    global kb
+    with KillerBee(device=dev_id) as kb:
+        try:
+            kb.set_channel(channel, 0)
+            kb.break_signal = False
+        except ValueError as e:
+            return "Could not set channel."
+        with PcapDumper(DLT_IEEE802_15_4, pcap_file_path, False) as pd:
+            rf_freq_mhz = kb.frequency(channel, 0) / 1000.0
+            packetcount = 0
+            if count is not None:
+                count = int(count)
+            while count != packetcount:
+                # Wait for the next packet
+                packet = kb.pnext()
+                if packet != None:
+                    packetcount+=1
+                    pd.pcap_dump(packet['bytes'], ant_dbm=packet['dbm'], freq_mhz=rf_freq_mhz)
+                
+                if kb.break_signal:
+                    break
+                    
+            kb.sniffer_off()
+            print(("{0} packets captured".format(packetcount)))
+
+def scap_pcap_reader(pcap_file_path):
+    conf.dot15d4_protocol = "zigbee"
+    scapy_cap = rdpcap(pcap_file_path)
+    packet_capture = [None] * len(scapy_cap)
+    for index, packet in enumerate(scapy_cap):
+        packet_capture[index] = {}
+        try:
+            dot15d4_fcs =  {
+                "fcf_reserved_1" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_1,
+                "fcf_panidcompress" : packet[Dot15d4][Dot15d4FCS].fcf_panidcompress,
+                "fcf_ackreq" : packet[Dot15d4][Dot15d4FCS].fcf_ackreq,
+                "fcf_pending" : packet[Dot15d4][Dot15d4FCS].fcf_pending,
+                "fcf_security" : packet[Dot15d4][Dot15d4FCS].fcf_security,
+                "fcf_frametype" : packet[Dot15d4][Dot15d4FCS].fcf_frametype,
+                "fcf_srcaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_srcaddrmode,
+                "fcf_framever" : packet[Dot15d4][Dot15d4FCS].fcf_framever,
+                "fcf_destaddrmode" : packet[Dot15d4][Dot15d4FCS].fcf_destaddrmode,
+                "fcf_reserved_2" : packet[Dot15d4][Dot15d4FCS].fcf_reserved_2,
+                "seqnum" : packet[Dot15d4][Dot15d4FCS].seqnum,
+                "fcs" : packet[Dot15d4][Dot15d4FCS].fcs
+                }
+            packet_capture[index]['dot15d4_fcs'] = dot15d4_fcs
+        except:
+            pass
+
+        try:
+            dot15d4_data = {
+                "dest_panid" : packet[Dot15d4][Dot15d4Data].dest_panid,
+                "dest_addr" : packet[Dot15d4][Dot15d4Data].dest_addr,
+                "src_addr" : packet[Dot15d4][Dot15d4Data].src_addr
+                }
+            packet_capture[index]['dot15d4_data'] = dot15d4_data
+        except:
+            pass
+
+        try:
+            zigbee_nwk = {
+                "discover_route" : packet[Dot15d4][ZigbeeNWK].discover_route,
+                "proto_version" : packet[Dot15d4][ZigbeeNWK].proto_version,
+                "frametype" : packet[Dot15d4][ZigbeeNWK].frametype,
+                "flags" : packet[Dot15d4][ZigbeeNWK].flags,
+                "destination" : packet[Dot15d4][ZigbeeNWK].destination,
+                "source" : packet[Dot15d4][ZigbeeNWK].source,
+                "radius" : packet[Dot15d4][ZigbeeNWK].radius,
+                "seqnum" : packet[Dot15d4][ZigbeeNWK].seqnum
+                }
+            packet_capture[index]['zigbee_nwk'] = zigbee_nwk
+        except:
+            pass
+        try:
+            zigbee_security_header = {
+                "reserved1" : packet[Dot15d4][ZigbeeSecurityHeader].reserved1,
+                "extended_nonce" : packet[Dot15d4][ZigbeeSecurityHeader].extended_nonce,
+                "key_type" : packet[Dot15d4][ZigbeeSecurityHeader].key_type,
+                "nwk_seclevel" : packet[Dot15d4][ZigbeeSecurityHeader].nwk_seclevel,
+                "fc" : packet[Dot15d4][ZigbeeSecurityHeader].fc,
+                "source" : packet[Dot15d4][ZigbeeSecurityHeader].source,
+                "key_seqnum" : packet[Dot15d4][ZigbeeSecurityHeader].key_seqnum,
+                "data" : packet[Dot15d4][ZigbeeSecurityHeader].data
+                }
+            data_utf = str(encode(packet[Dot15d4][ZigbeeSecurityHeader].data, "hex"), "utf-8")
+            data_mic = data_utf.split("b9")
+            zigbee_security_header["data_utf8"] = data_mic[0]
+            zigbee_security_header["mic_utf8"] = data_mic[1]
+            packet_capture[index]['zigbee_security_header'] = zigbee_security_header
+        except:
+            pass
+    
+    return packet_capture
 
 def cvsscalc(request):
     template = "hackbee/cvss.html"
