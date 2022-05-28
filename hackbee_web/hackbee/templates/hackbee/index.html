@@ -1,38 +1,6 @@
-{% block title %}<title>Home</title> {% endblock %}
-{% block css %} 
-{% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'hackbee/css/bootstrap.css' %}" >  
-    <script src="{% static 'hackbee/js/bootstrap.js' %}"></script>  
-{% endblock %}
-{% block navigation %}
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container justify-content-center">
-                <a class="navbar-brand" href="#">HackBee</a>
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Help</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                    </li>
-                </ul>
-            </div>
-    </nav>
-{% endblock %}
-{% block content %}
-    <div class="container pt-4">
-        <h1>Welcome to Hackbee</h1>
-        <p>
-            This is a simple web application to demonstrate the use of the Killerbee framework.
-        </p>
-        <p> The Killerbee framework is a security research framework for the ZigBee protocol. </p>
-    </div>
+{%extends "hackbee/base.html" %}
+
+{%block tools %}
     <div class="container pt-4">
         <h1>Available Devices</h1> 
         <table class="table table-sm">
@@ -188,7 +156,28 @@
                 </tr>
             {% endfor %}
     </div>
-{% endblock %}
+    <h1>ZigBee Replay Attack</h1>
+    <p>This tool is based on the KillerBee zbreplay tool.</p>
+        <form method="GET">
+            {% csrf_token %}
+            <p>PCAP Path</p>
+            <input type="text" name="input_pcap">
+            <p>Device ID / Interface</p>
+            <input type="text" name="device_id">
+            <p>Channel</p>
+            <input type="text" name="channel">
+            <p>Amount of packets to replay. Default = 1</p>
+            <input type="text" name="count">
+            <input type="submit" name="start_replay_attack" value="Start replay attack.">
+        </form>
+        {{ replay_attack_status }}
+        {% if replay_attack_results is None %}
+            <p>No result.</p>
+        {% else %}
+            <p> {{ replay_attack_results }} packets transmitted</p>
+        {% endif %}
+    </div>
+{%endblock tools%}
 
     
             

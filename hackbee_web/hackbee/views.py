@@ -46,7 +46,7 @@ def index(request):
         else:
             context['zbconverter_status'] = status
             context['zbconverter_output_file'] = output_file
-    
+
     if request.GET.get("start_sniffing"):
         pcap_file_path = request.GET.get("pcap_file_path")
         dev_id = request.GET.get("dev_id")
@@ -69,6 +69,11 @@ def index(request):
         else:
             scapy_cap = scap_pcap_reader(pcap_file_path)
             context['pcap_content'] = scapy_cap
+        
+    if request.GET.get("start_replay_attack"):
+        status, results = replay_attack(request)
+        context['replay_attack_status'] = status
+        context['replay_attack_results'] = results
 
     return render(request, template, context = context)
 
@@ -209,3 +214,25 @@ def scap_pcap_reader(pcap_file_path):
             pass
     
     return packet_capture
+
+def cvsscalc(request):
+    template = "hackbee/cvss.html"
+    return render(request,template)
+
+def report(request):
+    return HttpResponse(" Hello")
+
+def replay_attack(request):
+    if request.GET.get("input_pcap") != "":
+        pcap = request.GET.get("input_pcap")
+        device_id = request.GET.get("device_id")
+        channel = request.GET.get("channel")
+        count = request.GET.get("count")
+        if count == "":
+            count = 1
+        status, results = replay_attack_pcap(pcap, device_id, channel, count)
+
+        return status, results
+
+    else:
+        return "Please provide pcap file path.", None
