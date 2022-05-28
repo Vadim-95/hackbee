@@ -58,9 +58,9 @@ def convert_dsna_to_pcap_file(input_file_path, output_file_path):
 def replay_attack_pcap(pcap, device_id, channel, count = 1):
     try:
         if count is not None:
-            os.system("sudo zbreplay -i {0} -r {1} -c {2} -n {3}".format(device_id,pcap, channel, count))
+            os.system("sudo zbreplay -i {0} -r {1} -c {2} -n {3} -s 0.1".format(device_id,pcap, channel, count))
         else:
-            os.system("sudo zbreplay -i {0} -r {1} -c {2} ".format(device_id, pcap, channel))
+            os.system("sudo zbreplay -i {0} -r {1} -c {2} -s 0.1".format(device_id, pcap, channel))
     except Exception as e:
         print(e)
         results = e
@@ -76,6 +76,8 @@ def replay_attack_pcap(pcap, device_id, channel, count = 1):
         results = None
         status_code = "Failed"
         
-    
-    os.system("sudo rm /tmp/zbreplay_result.json")
+    try:
+        os.system("sudo rm /tmp/zbreplay_result.json")
+    except:
+        pass
     return status_code, results
