@@ -4,6 +4,8 @@ from scapy.all import *
 from codecs import encode
 from .killerbee_interface import *
 from killerbee import *
+from hackbee.models import Zbgoodfind
+import datetime
 
 kb = None
 
@@ -11,6 +13,8 @@ def index(request):
     global kb
     template = 'hackbee/index.html'
     device_list = get_device_information()
+
+    report.time = datetime.datetime.now()
 
     context = {
         'device_list': device_list,
@@ -37,6 +41,13 @@ def index(request):
         context['zbgoodfind_key'] = goodfind_results['zbgoodfind_key']
         context['zbgoodfind_guesses'] = goodfind_results['zbgoodfind_guesses']
         context['zbgoodfind_status'] = goodfind_results['zbgoodfind_status']
+
+        obj = Zbgoodfind()
+        obj.key = goodfind_results['zbgoodfind_key']
+        obj.guesses = goodfind_results['zbgoodfind_guesses']
+        obj.status_code = goodfind_results['zbgoodfind_status']
+        obj.save()
+
 
     if request.GET.get("start_zbconverter"):
         output_file, status = convert_dsna_to_pcap(request)
@@ -100,6 +111,8 @@ def goodfind(request):
         'zbgoodfind_guesses' : guesses,
         'zbgoodfind_status' : status_code
     }
+
+
     return goodfind_results
 
 def convert_dsna_to_pcap(request):
@@ -220,7 +233,13 @@ def cvsscalc(request):
     return render(request,template)
 
 def report(request):
-    return HttpResponse(" Hello")
+    manager = Zbgoodfind.objects.all().values()
+    context = {
+        'data' : manager
+    }
+    print(manager)
+    template = "hackbee/report.html"
+    return render(request,template,context)
 
 def replay_attack(request):
     if request.GET.get("input_pcap") != "":
