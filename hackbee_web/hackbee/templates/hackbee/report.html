@@ -1,14 +1,51 @@
 {%include "hackbee/base.html"%}
 
+<div class="container pt-4">
+         <div class="container pt-4">
+        <h1>Start Report</h1>
+        <form method="GET">
+            {% csrf_token %}
+            <input type="date" name="start_time" value="">
+            <input type="date" name="end_time" value="">
+            <input type="submit" name="start_report" value="Start report.">
+    </div>
+
 {% block content%}
 
 <div>
         <ul>
-            <li>Employee List</li>
+            <li>Tools used and Results</li>
+            {% for v in  zconvert %}
+            <ul>
+                <li>ID: {{ v.id }}</li>
+                <li>Tool used: {{ v.name }}</li>
+                <li>Status: {{v.status_code}}</li>
+                <li>Execution time: {{v.start_time | date:"D d M y"}}</li>
+            </ul>
+            <br/>
 
-            {% for d in  data %}
-        <li>{{ d }}</li>
-{% endfor %}
+            {% endfor %}
+            {% for v in  gfind %}
+            <ul>
+                <li>ID: {{ v.id }}</li>
+                <li>Tool used: {{ v.name }}</li>
+                <li>Status: {{v.status_code}}</li>
+                <li>Execution time: {{v.start_time | date:"D d M y"}}</li>
+                <li>Key: {{v.key}}</li>
+                <li>Status: {{v.guesses}}</li>
+            </ul>
+            <br/>
+            {% endfor %}
+            {% for v in  zbreplay %}
+            <ul>
+                <li>ID: {{ v.id }}</li>
+                <li>Tool used: {{ v.name }}</li>
+                <li>Status: {{v.status_code}}</li>
+                <li>Execution time: {{v.start_time | date:"D d M y"}}</li>
+                <li>Packets replayed: {{v.results}}</li>
+            </ul>
+            <br/>
+            {% endfor %}
 
         </ul>
     </div>
