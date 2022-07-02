@@ -32,7 +32,7 @@ def get_open_channels(dev_id, channel, verbose=False, delay=2, scan_time=3):
 def key_search_pcap_mem(memdump, pcap):
     try:
         os.system("sudo zbgoodfind -r {0} -f {1} ".format(pcap, memdump))
-        with open('/tmp/zbgoodfind_result.json','w+') as f:
+        with open('/tmp/zbgoodfind_result.json') as f:
             zbgoodfind_result = json.load(f)
         key = zbgoodfind_result["key"]
         guesses = zbgoodfind_result["guesses"]

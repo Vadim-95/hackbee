@@ -4,9 +4,9 @@ from scapy.all import *
 from codecs import encode
 from .killerbee_interface import *
 from killerbee import *
-from hackbee.models import Zbgoodfind
+from .models import *
 import datetime
-
+from .report import *
 kb = None
 
 def index(request):
@@ -14,11 +14,14 @@ def index(request):
     template = 'hackbee/index.html'
     device_list = get_device_information()
 
-    report.time = datetime.datetime.now()
+
 
     context = {
         'device_list': device_list,
     }
+
+
+
     if request.GET.get("start_channel_discovery"):
         dev_id = request.GET.get("dev_id")
         channel = request.GET.get("channel")
@@ -42,10 +45,7 @@ def index(request):
         context['zbgoodfind_guesses'] = goodfind_results['zbgoodfind_guesses']
         context['zbgoodfind_status'] = goodfind_results['zbgoodfind_status']
 
-        obj = Zbgoodfind()
-        obj.key = goodfind_results['zbgoodfind_key']
-        obj.guesses = goodfind_results['zbgoodfind_guesses']
-        obj.status_code = goodfind_results['zbgoodfind_status']
+        obj = Zbgoodfind(goodfind_results['zbgoodfind_key'],goodfind_results['zbgoodfind_guesses'],goodfind_results['zbgoodfind_status'],report)
         obj.save()
 
 
@@ -129,7 +129,13 @@ def convert_dsna_to_pcap(request):
 
     if status != "Success":
         output_file_path = None
-    
+
+    obj = Zbconvert()
+    obj.status_code = status
+    obj.save()
+
+    print(obj.status_code)
+
     return output_file_path, status
 
 def killerbee_sniffer(dev_id, channel, pcap_file_path, count):
@@ -233,13 +239,14 @@ def cvsscalc(request):
     return render(request,template)
 
 def report(request):
-    manager = Zbgoodfind.objects.all().values()
-    context = {
-        'data' : manager
-    }
-    print(manager)
+    cxt={}
+    if request.GET.get("start_report"):
+        stime = request.GET.get("start_time")
+        etime = request.GET.get("end_time")
+        cxt = start_report(stime,etime)
+
     template = "hackbee/report.html"
-    return render(request,template,context)
+    return render(request,template,cxt)
 
 def replay_attack(request):
     if request.GET.get("input_pcap") != "":
@@ -250,6 +257,10 @@ def replay_attack(request):
         if count == "":
             count = 1
         status, results = replay_attack_pcap(pcap, device_id, channel, count)
+        obj = Zbreplay()
+        obj.status_code = status
+        obj.results = results
+        obj.save()
 
         return status, results
 
